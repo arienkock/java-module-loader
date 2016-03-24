@@ -1,13 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>nl.supposed.maven</groupId>
-	<artifactId>boilerplate-project</artifactId>
+	<groupId>module-loader</groupId>
+	<artifactId>module-loader</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
-	<name>Boilerplate Maven project</name>
+	<name>Java module loader</name>
 	<description>
-		Created as a means to reuse cherry picked best practices.
+		Defines, loads and REloads java code modules.
 	</description>
 
 	<developers>
@@ -34,7 +34,7 @@
 			<dependency>
 				<groupId>org.testng</groupId>
 				<artifactId>testng</artifactId>
-				<version>6.9.9</version>
+				<version>6.9.10</version>
 				<classifier>jdk15</classifier>
 				<scope>test</scope>
 				<exclusions>
@@ -56,17 +56,17 @@
 			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
-				<version>1.1.3</version>
+				<version>1.1.6</version>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
-				<version>1.7.12</version>
+				<version>1.7.19</version>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>jcl-over-slf4j</artifactId>
-				<version>1.7.12</version>
+				<version>1.7.19</version>
 			</dependency>
 
 			<!-- Util -->
@@ -74,17 +74,22 @@
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
-				<version>19.0-rc2</version>
+				<version>19.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
 				<version>3.4</version>
 			</dependency>
-			
+
 		</dependencies>
 	</dependencyManagement>
-
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+	</dependencies>
 	<build>
 		<plugins>
 
@@ -94,24 +99,11 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.2</version>
 				<configuration>
-					<!-- Google's errorprone is used for more code quality checking -->
-					<compilerId>javac-with-errorprone</compilerId>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
-					<compilerArgs>
-						<arg>-Xlint</arg>
-					</compilerArgs>
-					<forceJavacCompilerUse>true</forceJavacCompilerUse>
-					<!-- Set to false because there is a bug that inverts the meaning -->
-					<useIncrementalCompilation>false</useIncrementalCompilation>
+
 				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>org.codehaus.plexus</groupId>
-						<artifactId>plexus-compiler-javac-errorprone</artifactId>
-						<version>2.5</version>
-					</dependency>
-				</dependencies>
+
 			</plugin>
 			<plugin>
 				<artifactId>maven-release-plugin</artifactId>
@@ -213,7 +205,7 @@
 					<execution>
 						<phase>validate</phase>
 						<configuration>
-						<configLocation>src/build/checkstyle.xml</configLocation>
+							<configLocation>src/build/checkstyle.xml</configLocation>
 							<encoding>UTF-8</encoding>
 							<consoleOutput>true</consoleOutput>
 							<failsOnError>true</failsOnError>
@@ -282,44 +274,11 @@
 					</execution>
 				</executions>
 			</plugin>
-
-			<!-- Artifact shrinking -->
-
-			<plugin>
-				<groupId>com.github.wvengen</groupId>
-				<artifactId>proguard-maven-plugin</artifactId>
-				<version>2.0.8</version>
-				<configuration>
-					<libs>
-						<lib>${java.home}/lib/rt.jar</lib>
-						<lib>${java.home}/lib/jsse.jar</lib>
-					</libs>
-					<proguardVersion>5.2</proguardVersion>
-					<!-- Uncomment if you want a shrunk uber-jar -->
-					<!-- <includeDependencyInjar>true</includeDependencyInjar> -->
-					<options>
-						<!-- Disable optimization if it's causing problems -->
-						<!-- <option>-dontoptimize</option> -->
-						<option>-dontobfuscate</option>
-						<option>-allowaccessmodification</option>
-						<option>-keepclasseswithmembers public class * { public static
-							void main(java.lang.String[]); }</option>
-					</options>
-				</configuration>
-				<executions>
-					<execution>
-						<id>shrink</id>
-						<goals>
-							<goal>proguard</goal>
-						</goals>
-						<phase>package</phase>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -373,4 +332,28 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+	<profiles>
+		<profile>
+			<id>windows_profile</id>
+			<activation>
+				<os>
+					<family>Windows</family>
+				</os>
+			</activation>
+			<properties>
+				<toolsjar>${java.home}/../lib/tools.jar</toolsjar>
+			</properties>
+		</profile>
+		<profile>
+			<id>osx_profile</id>
+			<activation>
+				<os>
+					<family>mac</family>
+				</os>
+			</activation>
+			<properties>
+				<toolsjar>${java.home}/../Classes/classes.jar</toolsjar>
+			</properties>
+		</profile>
+	</profiles>
 </project>
