@@ -1,4 +1,4 @@
-package nl.positor.module;
+package nl.positor.module.wiring;
 
 public class ModuleContainer {
 

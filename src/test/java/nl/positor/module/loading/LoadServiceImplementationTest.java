@@ -1,13 +1,16 @@
-package nl.positor.module;
+package nl.positor.module.loading;
 
-import static org.junit.Assert.*;
+import nl.positor.module.Boot;
+import nl.positor.module.Workspace;
+import nl.positor.module.loading.ModuleLoader;
+import org.junit.After;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
 
-import org.junit.After;
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 public class LoadServiceImplementationTest {
 	@After
@@ -44,8 +47,7 @@ public class LoadServiceImplementationTest {
 				.from(
 						Workspace.modulePath("printer.Printer").resolve("api"), 
 						Workspace.modulePath("printer.Printer").resolve("impl"))
-				.build()
-				.loader;
+				.build();
 	}
 	
 	@Test

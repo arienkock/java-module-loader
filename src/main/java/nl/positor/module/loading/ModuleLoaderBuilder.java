@@ -1,15 +1,15 @@
-package nl.positor.module;
+package nl.positor.module.loading;
+
+import nl.positor.module.wiring.ModuleContainer;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
-import java.util.*;
 
 public class ModuleLoaderBuilder {
 	private String className;
 	private URL[] privateClassPath;
 	private URL[] publicClassPath;
-	private Set<ModuleLoader> dependencies = new HashSet<>();
 
 	public ModuleLoaderBuilder module(String className) {
 		this.className = className;
@@ -31,30 +31,13 @@ public class ModuleLoaderBuilder {
 		return this;
 	}
 
-	public ModuleLoaderBuilder referencing(ModuleLoader... dependencies) {
-        this.dependencies.addAll(Arrays.asList(dependencies));
-        return this;
-	}
-
 	/**
 	 * Creates a new {@link ModuleLoader} and optionally a
 	 * {@link ModuleContainer} if any intra-module wiring is required.
 	 *
 	 * @return the result of the build
 	 */
-	public Result build() {
-		return new Result(
-				null,
-				new ModuleLoader(className, privateClassPath, publicClassPath));
-	}
-
-	public static class Result {
-		public final ModuleContainer container;
-		public final ModuleLoader loader;
-
-		public Result(ModuleContainer container, ModuleLoader loader) {
-			this.container = container;
-			this.loader = loader;
-		}
+	public ModuleLoader build() {
+		return new ModuleLoader(className, privateClassPath, publicClassPath);
 	}
 }

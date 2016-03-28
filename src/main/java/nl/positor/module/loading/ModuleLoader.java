@@ -1,4 +1,4 @@
-package nl.positor.module;
+package nl.positor.module.loading;
 
 import java.net.URL;
 import java.net.URLClassLoader;
