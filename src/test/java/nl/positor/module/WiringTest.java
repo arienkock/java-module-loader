@@ -7,8 +7,8 @@ import org.junit.Test;
  */
 public class WiringTest {
     @Test
-    public void testDEpendency() {
-        Boot.module("printer.Printer")
-                .referencing()
+    public void testDependency() {
+//        Boot.module("printer.Printer")
+//                .referencing()
     }
 }

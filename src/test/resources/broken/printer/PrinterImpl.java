@@ -1,16 +1,8 @@
 package printer;
 
-import nl.positor.module.definition.LifeCycle;
-
-public class PrinterImpl implements Printer, LifeCycle {
+public class PrinterImpl implements Printer {
 	
 	public void print(String line) {
-	}
-	
-	public void start() {
-	}
-	
-	public void stop() {
 	}
 	
 	@Override

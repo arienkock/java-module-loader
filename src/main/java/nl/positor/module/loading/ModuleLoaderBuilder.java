@@ -1,10 +1,13 @@
 package nl.positor.module.loading;
 
 import nl.positor.module.wiring.ModuleContainer;
+import nl.positor.util.Always;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Path;
+import java.util.function.Supplier;
 
 public class ModuleLoaderBuilder {
 	private String className;
@@ -38,6 +41,13 @@ public class ModuleLoaderBuilder {
 	 * @return the result of the build
 	 */
 	public ModuleLoader build() {
-		return new ModuleLoader(className, privateClassPath, publicClassPath);
+		URL[] privateClassPathL = privateClassPath;
+		URL[] publicClassPathL = publicClassPath;
+		Supplier<ClassLoadingPair> classLoadingSource =
+				() -> new ClassLoadingPair(
+						() -> Thread.currentThread().getContextClassLoader(),
+						pubCl -> new URLClassLoader(privateClassPathL, pubCl),
+						parentCl -> new URLClassLoader(publicClassPathL,parentCl));
+		return new ModuleLoader(className, classLoadingSource);
 	}
 }
