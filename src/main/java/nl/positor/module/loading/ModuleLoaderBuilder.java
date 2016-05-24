@@ -1,7 +1,6 @@
 package nl.positor.module.loading;
 
 import nl.positor.module.wiring.ModuleContainer;
-import nl.positor.util.Always;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -35,12 +34,12 @@ public class ModuleLoaderBuilder {
 	}
 
 	/**
-	 * Creates a new {@link ModuleLoader} and optionally a
+	 * Creates a new {@link SimpleModuleLoader} and optionally a
 	 * {@link ModuleContainer} if any intra-module wiring is required.
 	 *
 	 * @return the result of the build
 	 */
-	public ModuleLoader build() {
+	public SimpleModuleLoader build() {
 		URL[] privateClassPathL = privateClassPath;
 		URL[] publicClassPathL = publicClassPath;
 		Supplier<ClassLoadingPair> classLoadingSource =
@@ -48,6 +47,6 @@ public class ModuleLoaderBuilder {
 						() -> Thread.currentThread().getContextClassLoader(),
 						pubCl -> new URLClassLoader(privateClassPathL, pubCl),
 						parentCl -> new URLClassLoader(publicClassPathL,parentCl));
-		return new ModuleLoader(className, classLoadingSource);
+		return new SimpleModuleLoader(className, classLoadingSource);
 	}
 }

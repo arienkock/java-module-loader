@@ -10,7 +10,7 @@ import java.lang.ref.WeakReference;
 
 import static org.junit.Assert.*;
 
-public class LoadServiceImplementationTest {
+public class SimpleModuleLoaderTest {
 	@After
 	public void after() throws IOException {
 		Workspace.clean();
@@ -20,8 +20,8 @@ public class LoadServiceImplementationTest {
 	@Test
 	public void testPublicAndPrivateInteraction() throws Exception {
 		Workspace.compileModule("printer.Printer");
-		ModuleLoader loader = printerLoader();
-		Object module = loader.peek();
+		SimpleModuleLoader loader = printerLoader();
+		Object module = loader.get();
 		
 		assertNotNull(module);
 		// module impl class was loaded using private classloader
@@ -35,11 +35,11 @@ public class LoadServiceImplementationTest {
 		// the module implements the interface loaded from the public classloader
 		assertTrue(loader.getClassLoadingPair().getPublicClassLoader().loadClass("printer.Printer").isAssignableFrom(module.getClass()));
 		
-		ModuleLoader loader2 = printerLoader();
-		assertFalse(loader.peek() == loader2.peek());
+		SimpleModuleLoader loader2 = printerLoader();
+		assertFalse(loader.get() == loader2.get());
 	}
 
-	private ModuleLoader printerLoader() throws IOException {
+	private SimpleModuleLoader printerLoader() throws IOException {
 		return Boot
 				.module("printer.PrinterImpl")
 				.from(
@@ -51,8 +51,8 @@ public class LoadServiceImplementationTest {
 	@Test
 	public void testReloading() throws Exception {
 		Workspace.compileModule("printer.Printer", "broken");
-		ModuleLoader loader = printerLoader();
-		Object module = loader.peek();
+		SimpleModuleLoader loader = printerLoader();
+		Object module = loader.get();
 		
 		assertEquals("BROKEN", module.toString());
 		
