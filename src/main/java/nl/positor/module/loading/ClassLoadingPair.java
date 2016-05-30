@@ -2,9 +2,12 @@ package nl.positor.module.loading;
 
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Created by Arien on 28-Mar-16.
@@ -45,5 +48,13 @@ public class ClassLoadingPair {
 
     public static Function<ClassLoader, ? extends ClassLoader> urlClassloaderProvider(URL[] classpath) {
         return parentClassloader -> new URLClassLoader(classpath, parentClassloader);
+    }
+
+    public static Supplier<ClassLoader> joinPublic(Collection<ClassLoadingPair> loaders) {
+        return () -> new AggregateClassLoader(
+                loaders
+                    .stream()
+                    .map(ClassLoadingPair::getPublicClassLoader)
+                    .collect(Collectors.toList()));
     }
 }

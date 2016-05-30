@@ -47,6 +47,6 @@ public class ModuleLoaderBuilder {
 						() -> Thread.currentThread().getContextClassLoader(),
 						pubCl -> new URLClassLoader(privateClassPathL, pubCl),
 						parentCl -> new URLClassLoader(publicClassPathL,parentCl));
-		return new SimpleModuleLoader(className, classLoadingSource);
+		return new SimpleModuleLoader(className, classLoadingSource, null);
 	}
 }

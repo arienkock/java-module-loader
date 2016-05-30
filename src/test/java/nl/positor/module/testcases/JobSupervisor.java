@@ -7,14 +7,33 @@ public class JobSupervisor {
     private JobCreator jobCreator;
     private JobRunner jobRunner;
 
+    public JobSupervisor() {
+    }
+
     public JobSupervisor(JobCreator jobCreator, JobRunner jobRunner) {
         this.jobCreator = jobCreator;
         this.jobRunner = jobRunner;
     }
 
-    void runSomeJobs(int count) {
+    public void runSomeJobs(int count) {
         for (int i=0; i < count; i++) {
             jobRunner.run(jobCreator.create());
         }
+    }
+
+    public JobCreator getJobCreator() {
+        return jobCreator;
+    }
+
+    public void setJobCreator(JobCreator jobCreator) {
+        this.jobCreator = jobCreator;
+    }
+
+    public JobRunner getJobRunner() {
+        return jobRunner;
+    }
+
+    public void setJobRunner(JobRunner jobRunner) {
+        this.jobRunner = jobRunner;
     }
 }

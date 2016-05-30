@@ -2,7 +2,11 @@ package nl.positor.module.loading;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Lazily instantiates an object of the type specified by {@link #className} and
@@ -17,11 +21,12 @@ import java.util.function.Supplier;
  * @author Arien
  *
  */
-public class SimpleModuleLoader implements ModuleLoader {
+public class SimpleModuleLoader implements ModuleLoader, ReloadListener {
 	private final String className;
     private final Supplier<ClassLoadingPair> classLoadingSource;
     private Object moduleInstance;
     private ClassLoadingPair classLoadingPair;
+	private Set<ReloadListener> reloadListeners = new HashSet<>();
 
 	/**
 	 * Creates a new instance. Use {@link ModuleLoaderBuilder} for convenience.
@@ -29,7 +34,7 @@ public class SimpleModuleLoader implements ModuleLoader {
 	 * @param className Qualified name of the module's implementing class.
 	 * @param classLoadingSource The actual class loading proider
 	 */
-	public SimpleModuleLoader(String className, Supplier<ClassLoadingPair> classLoadingSource) {
+	public SimpleModuleLoader(String className, Supplier<ClassLoadingPair> classLoadingSource, Iterable<ModuleLoader> loaders) {
 		this.className = className;
         this.classLoadingSource = classLoadingSource;
 	}
@@ -52,9 +57,9 @@ public class SimpleModuleLoader implements ModuleLoader {
      * this Oracle tutorial</a>.
 	 *
 	 * @return a new module
-	 * @throws ClassNotFoundException propagated from inner classloaders
-	 * @throws InstantiationException propagated from inner classloaders
-	 * @throws IllegalAccessException propagated from inner classloaders
+	 * @throws ClassNotFoundException propagated loaderFrom inner classloaders
+	 * @throws InstantiationException propagated loaderFrom inner classloaders
+	 * @throws IllegalAccessException propagated loaderFrom inner classloaders
      * @throws InvocationTargetException when {@link Constructor#newInstance} throws an exception.
 	 */
 	Object load() throws
@@ -68,32 +73,36 @@ public class SimpleModuleLoader implements ModuleLoader {
         Constructor ctor = null;
         for (int i = 0; i < ctors.length; i++) {
             ctor = ctors[i];
-            if (ctor.getGenericParameterTypes().length == 0)
-                break;
+            if (ctor.getGenericParameterTypes().length == 0) {
+				moduleInstance = ctor.newInstance();
+				return moduleInstance;
+			}
         }
-		moduleInstance = ctor.newInstance();
-		return moduleInstance;
+		throw new IllegalArgumentException("No zero-arg constructor exists");
 	}
 
 	/**
-	 * Lazily initializes a new singleton module. Subsequent calls return the
-	 * same instance until one of the {@link #reload()} methods is called.
+	 * Lazily initializes a new singleton module if an entry-point className was provided.
+	 * Subsequent calls return the same instance until one of the {@link #reload()} methods is called.
 	 *
 	 * @return the current module instance
-	 * @throws ClassNotFoundException propagated from inner classloaders
-	 * @throws InstantiationException propagated from inner classloaders
-	 * @throws IllegalAccessException propagated from inner classloaders
-     * @throws InvocationTargetException propagated from {@ling #load}
+	 * @throws ClassNotFoundException propagated loaderFrom inner classloaders
+	 * @throws InstantiationException propagated loaderFrom inner classloaders
+	 * @throws IllegalAccessException propagated loaderFrom inner classloaders
+     * @throws InvocationTargetException propagated loaderFrom {@ling #load}
 	 */
 	public Object get() throws
             ClassNotFoundException,
             InstantiationException,
             IllegalAccessException,
             InvocationTargetException {
-		if (moduleInstance == null) {
-			moduleInstance = load();
+		if (className != null) {
+			if (moduleInstance == null) {
+				moduleInstance = load();
+			}
+			return moduleInstance;
 		}
-		return moduleInstance;
+		return null;
 	}
 
     /**
@@ -101,19 +110,75 @@ public class SimpleModuleLoader implements ModuleLoader {
      * then calls {@link #get()} resulting in a new module instance.
      *
      * @return The new singleton instance
-	 * @throws ClassNotFoundException propagated from inner classloaders
-	 * @throws InstantiationException propagated from inner classloaders
-	 * @throws IllegalAccessException propagated from inner classloaders
-     * @throws InvocationTargetException propagated from {@ling #load}
+	 * @throws ClassNotFoundException propagated loaderFrom inner classloaders
+	 * @throws InstantiationException propagated loaderFrom inner classloaders
+	 * @throws IllegalAccessException propagated loaderFrom inner classloaders
+     * @throws InvocationTargetException propagated loaderFrom {@link #load}
 	 */
 	public Object reload() throws
             ClassNotFoundException,
             InstantiationException,
             IllegalAccessException,
             InvocationTargetException {
-        classLoadingPair = null;
-		moduleInstance = null;
+		clear();
+		afterReload();
 		return get();
 	}
 
+	private void clear() throws ClassNotFoundException,
+			InstantiationException,
+			IllegalAccessException,
+			InvocationTargetException {
+		Object oldInstance = moduleInstance;
+		for (ReloadListener listener : reloadListeners) {
+			try {
+				listener.beforeReload(oldInstance);
+			} catch (ClassNotFoundException |
+					InstantiationException |
+					IllegalAccessException |
+					InvocationTargetException e) {
+				throw e;
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+		classLoadingPair = null;
+		moduleInstance = null;
+	}
+
+	@Override
+	public void addReloadListener(ReloadListener listener) {
+		reloadListeners.add(listener);
+	}
+
+	@Override
+	public void beforeReload(Object previousInstance) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException {
+		clear();
+	}
+
+	@Override
+	public void afterReload() throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException {
+		for (ReloadListener listener : reloadListeners) {
+			try {
+				listener.afterReload();
+			} catch (ClassNotFoundException |
+					InstantiationException |
+					IllegalAccessException |
+					InvocationTargetException e) {
+				throw e;
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+		get();
+	}
+
+	public static Supplier<ClassLoader> joinPublic(Collection<SimpleModuleLoader> modules) {
+		return () -> new AggregateClassLoader(
+				modules
+						.stream()
+						.map(SimpleModuleLoader::getClassLoadingPair)
+						.map(ClassLoadingPair::getPublicClassLoader)
+						.collect(Collectors.toList()));
+	}
 }

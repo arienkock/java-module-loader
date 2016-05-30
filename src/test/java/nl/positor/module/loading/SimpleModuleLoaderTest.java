@@ -32,7 +32,7 @@ public class SimpleModuleLoaderTest {
 			fail();
 		} catch (ClassNotFoundException e) {
 		}
-		// the module implements the interface loaded from the public classloader
+		// the module implements the interface loaded loaderFrom the public classloader
 		assertTrue(loader.getClassLoadingPair().getPublicClassLoader().loadClass("printer.Printer").isAssignableFrom(module.getClass()));
 		
 		SimpleModuleLoader loader2 = printerLoader();
