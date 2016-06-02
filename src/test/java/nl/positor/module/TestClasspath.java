@@ -1,5 +1,8 @@
 package nl.positor.module;
 
+import com.google.common.collect.ImmutableSet;
+import nl.positor.module.definition.ModuleClassPath;
+import nl.positor.module.definition.ModuleDefinition;
 import nl.positor.module.testcases.Job;
 import nl.positor.module.testcases.JobCreator;
 import nl.positor.module.testcases.JobCreatorImpl;
@@ -14,6 +17,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * Created by Arien on 24-May-16.
@@ -63,8 +69,35 @@ public class TestClasspath {
         return pathForId("JobRunner_private");
     }
 
-    public static URL[] jobApiClasspath() {
-        return pathForId("Job");
+    public static ModuleClassPath jobApiClasspath() {
+        ImmutableSet<String> classnameSet = ImmutableSet.of(Job.class.getName());
+        ModuleDefinition definition = new ModuleDefinition() {
+            @Override
+            public String getEntryPoint() {
+                return null;
+            }
+
+            @Override
+            public Set<String> getPublicClasses() {
+                return classnameSet;
+            }
+
+            @Override
+            public Iterable<ModuleDefinition> getDependencies() {
+                return Collections.emptyList();
+            }
+        };
+        return new ModuleClassPath() {
+            @Override
+            public ModuleDefinition getDefinition() {
+                return definition;
+            }
+
+            @Override
+            public Iterable<URL> getClassPath() {
+                return Arrays.<URL>asList(pathForId("Job"));
+            }
+        }
     }
 
     private static URL[] pathForId(String id) {
