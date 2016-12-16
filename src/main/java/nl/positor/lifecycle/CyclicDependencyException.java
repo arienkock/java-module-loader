@@ -1,6 +1,4 @@
-package nl.positor.module.lifecycle;
-
-import nl.positor.util.DistinctParams;
+package nl.positor.lifecycle;
 
 /**
  * Created by Arien on 26-May-16.

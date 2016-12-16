@@ -1,4 +1,4 @@
-package nl.positor.module.lifecycle;
+package nl.positor.lifecycle;
 
 /**
  * Created by Arien on 26-May-16.

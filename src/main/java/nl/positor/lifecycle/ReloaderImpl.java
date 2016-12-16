@@ -1,4 +1,4 @@
-package nl.positor.module.lifecycle;
+package nl.positor.lifecycle;
 
 import com.google.common.collect.Iterables;
 import nl.positor.util.DistinctParams;
@@ -17,21 +17,21 @@ public class ReloaderImpl implements Reloader {
         DistinctParamsFunction<Lifecycle, Iterable<Lifecycle>> contextLookup = DistinctParams.requireDistinct(context::getDependencies);
         LinkedHashSet<Lifecycle> objectsToManage = new LinkedHashSet<>();
         objectsToManage.add(lifecycleObject);
-        int index = 0;
-        while (index++ < objectsToManage.size()) {
+        for (int index = 0; index < objectsToManage.size(); index++) {
             Lifecycle object = Iterables.get(objectsToManage, index);
             try {
                 Iterables.addAll(objectsToManage, contextLookup.apply(object));
             } catch (DistinctParamsViolationException e) {
                 throw new CyclicDependencyException(e);
             }
+            index++;
         }
-        while (--index < objectsToManage.size()) {
+        for (int index = objectsToManage.size() - 1; index >= 0; index--) {
             Lifecycle object = Iterables.get(objectsToManage, index);
             object.stop();
             object.clean();
         }
-        while (index++ < objectsToManage.size()) {
+        for (int index = 0; index < objectsToManage.size(); index++) {
             Lifecycle object = Iterables.get(objectsToManage, index);
             object.start();
         }
