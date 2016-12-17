@@ -1,7 +1,8 @@
-package nl.positor.modularity.lifecycle.impl;
+package nl.positor.modularity.lifecycle;
 
 import nl.positor.modularity.lifecycle.api.Context;
 import nl.positor.modularity.lifecycle.api.Lifecycle;
+import nl.positor.modularity.lifecycle.impl.DefaultReloader;
 import org.junit.Assert;
 import org.junit.Test;
 

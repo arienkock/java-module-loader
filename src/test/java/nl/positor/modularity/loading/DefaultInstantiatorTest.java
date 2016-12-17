@@ -1,6 +1,6 @@
-package nl.positor.modularity.loading.impl;
+package nl.positor.modularity.loading;
 
-import nl.positor.modularity.loading.api.InstanceHolder;
+import nl.positor.modularity.loading.impl.DefaultInstantiatorBuilder;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;

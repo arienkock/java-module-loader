@@ -1,4 +1,4 @@
-package nl.positor.modularity.loading.impl;
+package nl.positor.modularity.loading;
 
 /**
  * Created by Arien on 16-Dec-16.

@@ -8,11 +8,11 @@ import java.util.function.Predicate;
 /**
  * Created by Arien on 16-Dec-16.
  */
-public class DefaultClassLoaderPair implements ModuleClassLoaderPair {
-    private final ClassLoader innerClassLoader;
-    private final ClassLoader outerClassLoader;
+public class DefaultModuleClassLoaderPair implements ModuleClassLoaderPair {
+    private final FilteredClassLoader innerClassLoader;
+    private final FilteredClassLoader outerClassLoader;
 
-    public DefaultClassLoaderPair(ModuleDefinition moduleDefinition, ClassLoader parentClassLoader) {
+    public DefaultModuleClassLoaderPair(ModuleDefinition moduleDefinition, ClassLoader parentClassLoader) {
         final Predicate<String> isPublic = moduleDefinition.getPublicClassCheck();
         final Predicate<String> isNotPublic = isPublic.negate();
         final Predicate<String> isNotExternal = moduleDefinition.getExternalClassCheck().negate();
@@ -21,12 +21,12 @@ public class DefaultClassLoaderPair implements ModuleClassLoaderPair {
     }
 
     @Override
-    public ClassLoader getOuterClassLoader() {
+    public FilteredClassLoader getOuterClassLoader() {
         return outerClassLoader;
     }
 
     @Override
-    public ClassLoader getInnerClassLoader() {
+    public FilteredClassLoader getInnerClassLoader() {
         return innerClassLoader;
     }
 }

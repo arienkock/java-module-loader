@@ -6,9 +6,9 @@ import java.net.URL;
  * Created by Arien on 26-May-16.
  */
 public interface ModuleDefinition {
-    PublicClassCheck getPublicClassCheck();
+    ClassNameCheck getPublicClassCheck();
 
-    ExternalClassCheck getExternalClassCheck();
+    ClassNameCheck getExternalClassCheck();
 
     URL[] getClassPath();
 }
