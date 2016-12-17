@@ -1,4 +1,7 @@
-package nl.positor.modularity.classpath.cases;
+package nl.positor.modularity.classpath.testcase_modules.caller;
+
+import nl.positor.modularity.classpath.testcase_modules.global_logger.GlobalLogger;
+import nl.positor.modularity.classpath.testcase_modules.tostringer_api.ToStringer;
 
 /**
  * Created by Arien on 16-Dec-16.

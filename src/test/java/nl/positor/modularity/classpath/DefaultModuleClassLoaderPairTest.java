@@ -2,12 +2,16 @@ package nl.positor.modularity.classpath;
 
 import nl.positor.modularity.classpath.api.ClassNameCheck;
 import nl.positor.modularity.classpath.api.ModuleDefinition;
-import nl.positor.modularity.classpath.cases.*;
 import nl.positor.modularity.classpath.impl.AggregateClassLoader;
 import nl.positor.modularity.classpath.impl.DefaultModuleClassLoaderPair;
 import nl.positor.modularity.classpath.impl.DefaultModuleDefinition;
 import nl.positor.modularity.classpath.impl.ListClassNameCheck;
-import org.junit.Assert;
+import nl.positor.modularity.classpath.testcase_modules.caller.ToStringCaller;
+import nl.positor.modularity.classpath.testcase_modules.caller.ToStringCallerExample;
+import nl.positor.modularity.classpath.testcase_modules.global_logger.GlobalLogger;
+import nl.positor.modularity.classpath.testcase_modules.tostringer_api.ToStringer;
+import nl.positor.modularity.classpath.testcase_modules.tostringer_impl1.ToStringerExample;
+import nl.positor.modularity.classpath.testcase_modules.tostringer_impl2.ToStringerExample2;
 import org.junit.Test;
 
 import java.lang.reflect.InvocationTargetException;

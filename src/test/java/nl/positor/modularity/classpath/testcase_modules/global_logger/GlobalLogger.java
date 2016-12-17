@@ -1,4 +1,4 @@
-package nl.positor.modularity.classpath.cases;
+package nl.positor.modularity.classpath.testcase_modules.global_logger;
 
 import java.util.ArrayList;
 import java.util.List;
