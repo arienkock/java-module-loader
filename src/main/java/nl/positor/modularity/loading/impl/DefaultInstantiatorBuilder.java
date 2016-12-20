@@ -1,6 +1,7 @@
 package nl.positor.modularity.loading.impl;
 
 import nl.positor.modularity.loading.api.InstanceHolder;
+import nl.positor.modularity.loading.api.InstanceProvider;
 import nl.positor.modularity.loading.api.Instantiator;
 import nl.positor.modularity.loading.api.InstantiatorBuilder;
 
@@ -12,8 +13,8 @@ import java.util.Map;
  */
 public class DefaultInstantiatorBuilder implements InstantiatorBuilder {
     private String className;
-    private InstanceHolder[] constructorArguments = new InstanceHolder[] {};
-    private Map<String, InstanceHolder[]> methodParametersMap = new HashMap<>();
+    private InstanceProvider[] constructorArguments = new InstanceProvider[] {};
+    private Map<String, InstanceProvider[]> methodParametersMap = new HashMap<>();
 
     public static InstantiatorBuilder newForClass(String className) {
         DefaultInstantiatorBuilder builder = new DefaultInstantiatorBuilder();
@@ -27,13 +28,13 @@ public class DefaultInstantiatorBuilder implements InstantiatorBuilder {
     }
 
     @Override
-    public InstantiatorBuilder constructWith(InstanceHolder... constructorArguments) {
+    public InstantiatorBuilder constructWith(InstanceProvider... constructorArguments) {
         this.constructorArguments = constructorArguments;
         return this;
     }
 
     @Override
-    public InstantiatorBuilder callMethodWith(String methodName, InstanceHolder... constructorArguments) {
+    public InstantiatorBuilder callMethodWith(String methodName, InstanceProvider... constructorArguments) {
         methodParametersMap.put(methodName, constructorArguments);
         return this;
     }

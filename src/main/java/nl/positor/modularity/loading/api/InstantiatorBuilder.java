@@ -7,9 +7,9 @@ public interface InstantiatorBuilder {
 
     InstantiatorBuilder forClass(String className);
 
-    InstantiatorBuilder constructWith(InstanceHolder... constructorArguments);
+    InstantiatorBuilder constructWith(InstanceProvider... constructorArguments);
 
-    InstantiatorBuilder callMethodWith(String methodName, InstanceHolder... constructorArguments);
+    InstantiatorBuilder callMethodWith(String methodName, InstanceProvider... constructorArguments);
 
     Instantiator build();
 }

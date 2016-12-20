@@ -1,6 +1,6 @@
 package nl.positor.modularity.loading.impl;
 
-import nl.positor.modularity.loading.api.InstanceHolder;
+import nl.positor.modularity.loading.api.InstanceProvider;
 import nl.positor.modularity.loading.api.Instantiator;
 
 import java.lang.reflect.Constructor;
@@ -14,10 +14,10 @@ import java.util.Objects;
  */
 public class DefaultInstantiator implements Instantiator {
     private final String className;
-    private final InstanceHolder[] constructorArguments;
-    private final Map<String, InstanceHolder[]> methodParametersMap;
+    private final InstanceProvider[] constructorArguments;
+    private final Map<String, InstanceProvider[]> methodParametersMap;
 
-    public DefaultInstantiator(String className, InstanceHolder[] constructorArguments, Map<String, InstanceHolder[]> methodParametersMap) {
+    public DefaultInstantiator(String className, InstanceProvider[] constructorArguments, Map<String, InstanceProvider[]> methodParametersMap) {
         Objects.requireNonNull(className, "Class name is required");
         Objects.requireNonNull(constructorArguments, "A non-null value for constructor arguments is required");
         Objects.requireNonNull(methodParametersMap, "A non-null method arguments map is required");
@@ -36,17 +36,16 @@ public class DefaultInstantiator implements Instantiator {
 
     private void callMethods(Class<?> loadedClass, Object instance) {
         outerMethodLoop:
-        for (Map.Entry<String, InstanceHolder[]> entry : methodParametersMap.entrySet()) {
+        for (Map.Entry<String, InstanceProvider[]> entry : methodParametersMap.entrySet()) {
             String methodName = entry.getKey();
-            InstanceHolder[] params = entry.getValue();
+            InstanceProvider[] params = entry.getValue();
             int methodArgLength = params.length;
             final Object[] requiredMethodArgs = new Object[methodArgLength];
             for (int argIdx = 0; argIdx < params.length; argIdx++) {
                 requiredMethodArgs[argIdx] = params[argIdx].get();
             }
             for (Method method : loadedClass.getMethods()) {
-                // TODO: add args type checking to method call
-                if (method.getName().equals(methodName) && method.getParameterCount() == methodArgLength) {
+                if (method.getName().equals(methodName) && method.getParameterCount() == methodArgLength && paramsMatch(method.getParameterTypes(), requiredMethodArgs)) {
                     try {
                         method.invoke(instance, requiredMethodArgs);
                         continue outerMethodLoop;
@@ -59,6 +58,15 @@ public class DefaultInstantiator implements Instantiator {
         }
     }
 
+    private boolean paramsMatch(Class<?>[] parameterTypes, Object[] requiredMethodArgs) {
+        for (int i = 0; i < parameterTypes.length; i++) {
+            if (!parameterTypes[i].isAssignableFrom(requiredMethodArgs[i].getClass())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private Object construct(Class<?> loadedClass) {
         Object instance = null;
         final int cArgLength = constructorArguments.length;
@@ -67,8 +75,7 @@ public class DefaultInstantiator implements Instantiator {
             requiredInstanceArgs[argIdx] = constructorArguments[argIdx].get();
         }
         for (Constructor<?> constructor : loadedClass.getConstructors()) {
-            // TODO: add args type checking to reflective instantiation
-            if (constructor.getParameterCount() == cArgLength) {
+            if (constructor.getParameterCount() == cArgLength && paramsMatch(constructor.getParameterTypes(), requiredInstanceArgs)) {
                 try {
                     instance = constructor.newInstance(requiredInstanceArgs);
                     break;
