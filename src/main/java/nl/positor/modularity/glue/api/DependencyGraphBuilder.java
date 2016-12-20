@@ -8,7 +8,7 @@ public interface DependencyGraphBuilder {
 
     Dependency constant(Object value);
 
-    Dependency dependency(Component component);
+    Dependency dependency(ComponentBuilder component);
 
     DependencyGraph build();
 }

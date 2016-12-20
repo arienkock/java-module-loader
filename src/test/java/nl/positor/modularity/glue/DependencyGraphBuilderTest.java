@@ -1,5 +1,8 @@
-package nl.positor.modularity.glue.api;
+package nl.positor.modularity.glue;
 
+import nl.positor.modularity.glue.api.ComponentBuilder;
+import nl.positor.modularity.glue.api.DependencyGraph;
+import nl.positor.modularity.glue.api.DependencyGraphBuilder;
 import org.junit.Test;
 
 /**
@@ -10,22 +13,16 @@ public class DependencyGraphBuilderTest {
     @Test
     public void testBuilder() {
         DependencyGraphBuilder appBuilder = createBuilder();
-        Component datasource = appBuilder
+        ComponentBuilder datasource = appBuilder
                 .withComponent()
                 .named("datasource")
-                .createdBy()
-                    .nullaryConstructor()
-                    .forClass("java.util.HashMap")
-                    .thenCalling("put", appBuilder.constant("root"), appBuilder.constant("password"))
-                    .finish()
-                .build();
+                .implementingClass("java.util.HashMap")
+                .callingConstructor()
+                .thenCalling("put", appBuilder.constant("root"), appBuilder.constant("password"));
         appBuilder
                 .withComponent()
                 .named("userDao")
-                .createdBy()
-                    .callingConstructorWith(appBuilder.dependency(datasource))
-                    .finish()
-                .build();
+                .callingConstructor(appBuilder.dependency(datasource));
         DependencyGraph app = appBuilder.build();
         app.startAll();
     }
