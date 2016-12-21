@@ -5,5 +5,5 @@ package nl.positor.modularity.lifecycle.api;
  */
 @FunctionalInterface
 public interface Reloader {
-    void reload(Lifecycle lifecycleObject, Context context);
+    void reload(Context context, Lifecycle... lifecycleObjects);
 }
