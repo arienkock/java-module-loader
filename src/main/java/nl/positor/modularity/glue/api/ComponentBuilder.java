@@ -8,9 +8,13 @@ import nl.positor.modularity.classpath.api.ModuleDefinition;
 public interface ComponentBuilder {
     ComponentBuilder named(String name);
 
-    ComponentBuilder implementingClass(String className);
+    ComponentBuilder withImplementingClass(String className);
 
-    ComponentBuilder callingConstructor(Dependency... constructorArguments);
+    default ComponentBuilder createdByCallingNullaryConstructor() {
+        return createdByCallingConstructorWith();
+    }
+
+    ComponentBuilder createdByCallingConstructorWith(Dependency... constructorArguments);
 
     ComponentBuilder thenCalling(String methodName, Dependency... constructorArguments);
 

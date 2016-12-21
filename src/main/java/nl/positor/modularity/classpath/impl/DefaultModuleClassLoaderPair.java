@@ -17,7 +17,7 @@ public class DefaultModuleClassLoaderPair implements ModuleClassLoaderPair {
         final Predicate<String> isNotPublic = isPublic.negate();
         final Predicate<String> isNotExternal = moduleDefinition.getExternalClassCheck().negate();
         this.outerClassLoader = new FilteredClassLoader(moduleDefinition.getClassPath(), parentClassLoader, isPublic.and(isNotExternal));
-        this.innerClassLoader = new FilteredClassLoader(moduleDefinition.getClassPath(), this.outerClassLoader, isNotExternal.and(isNotPublic));
+        this.innerClassLoader = new FilteredClassLoader(moduleDefinition.getClassPath(), this.outerClassLoader, isNotPublic.and(isNotExternal));
     }
 
     @Override

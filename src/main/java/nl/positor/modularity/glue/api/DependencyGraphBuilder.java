@@ -10,5 +10,7 @@ public interface DependencyGraphBuilder {
 
     Dependency dependency(ComponentBuilder component);
 
+    Dependency dependencyNamed(String name);
+
     DependencyGraph build();
 }

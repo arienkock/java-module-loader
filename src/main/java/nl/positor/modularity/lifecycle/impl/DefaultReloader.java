@@ -36,6 +36,7 @@ public class DefaultReloader implements Reloader {
                 }
             });
         }
+        // TODO: don't re-check stopped/started nodes each loop
         while (stateMap.values().stream().anyMatch(m -> !m.isStopped())) {
             reloadingNodes.forEach(n -> {
                 if (reverseDependencyMap.getOrDefault(n, Collections.emptyList()).stream().map(stateMap::get).allMatch(u -> u.isStopped())) {

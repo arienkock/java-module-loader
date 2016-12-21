@@ -16,13 +16,13 @@ public class DependencyGraphBuilderTest {
         ComponentBuilder datasource = appBuilder
                 .withComponent()
                 .named("datasource")
-                .implementingClass("java.util.HashMap")
-                .callingConstructor()
+                .withImplementingClass("java.util.HashMap")
+                .createdByCallingNullaryConstructor()
                 .thenCalling("put", appBuilder.constant("root"), appBuilder.constant("password"));
         appBuilder
                 .withComponent()
                 .named("userDao")
-                .callingConstructor(appBuilder.dependency(datasource));
+                .createdByCallingConstructorWith(appBuilder.dependency(datasource));
         DependencyGraph app = appBuilder.build();
         app.startAll();
     }
