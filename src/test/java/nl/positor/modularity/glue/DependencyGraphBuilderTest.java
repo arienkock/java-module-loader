@@ -1,6 +1,5 @@
 package nl.positor.modularity.glue;
 
-import nl.positor.modularity.glue.api.ComponentBuilder;
 import nl.positor.modularity.glue.api.DependencyGraph;
 import nl.positor.modularity.glue.api.DependencyGraphBuilder;
 import org.junit.Test;
@@ -12,18 +11,29 @@ public class DependencyGraphBuilderTest {
 
     @Test
     public void testBuilder() {
-        DependencyGraphBuilder appBuilder = createBuilder();
-        ComponentBuilder datasource = appBuilder
+        DependencyGraphBuilder application = createBuilder();
+        application
                 .withComponent()
-                .named("datasource")
-                .withImplementingClass("java.util.HashMap")
+                .named("messageServer")
+                .withImplementingClass("nl.positor.modularity.glue.testcase.MessageServerExample")
                 .createdByCallingNullaryConstructor()
-                .thenCalling("put", appBuilder.constant("root"), appBuilder.constant("password"));
-        appBuilder
+                .startedByCalling("start")
+                .shutdownByCalling("stop");
+        application
                 .withComponent()
-                .named("userDao")
-                .createdByCallingConstructorWith(appBuilder.dependency(datasource));
-        DependencyGraph app = appBuilder.build();
+                .named("database")
+                .withImplementingClass("nl.positor.modularity.glue.testcase.MessageDatabaseExample")
+                .createdByCallingNullaryConstructor();
+        application
+                .withComponent()
+                .named("myHandler")
+                .withImplementingClass("nl.positor.modularity.glue.testcase.MyHandler")
+                .createdByCallingConstructorWith(
+                        application.dependencyNamed("messageServer"),
+                        application.dependencyNamed("database"))
+                .startedByCalling("start")
+                .shutdownByCalling("stop");
+        DependencyGraph app = application.build();
         app.startAll();
     }
 

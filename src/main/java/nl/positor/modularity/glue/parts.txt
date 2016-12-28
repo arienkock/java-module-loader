@@ -2,3 +2,6 @@ Track which components were loaded from which class loaders, for reloading purpo
  - Keep weak references to check if old components are being GC'd
 Track dependencies between components, for partial application reloads.
 Support definition of lifecycle for components
+
+Check for cyclic dependencies
+Useful error messages when instantiation fails

@@ -18,6 +18,8 @@ public interface ComponentBuilder {
 
     ComponentBuilder thenCalling(String methodName, Dependency... constructorArguments);
 
+    ComponentBuilder startedByCalling(String methodName);
+
     ComponentBuilder shutdownByCalling(String methodName);
 
     ComponentBuilder cleanUpByCalling(String methodName);
