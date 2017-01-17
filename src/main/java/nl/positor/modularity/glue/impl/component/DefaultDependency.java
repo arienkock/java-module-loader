@@ -1,6 +1,6 @@
-package nl.positor.modularity.glue.impl;
+package nl.positor.modularity.glue.impl.component;
 
-import nl.positor.modularity.glue.api.Dependency;
+import nl.positor.modularity.glue.api.component.Dependency;
 
 /**
  * Created by Arien on 28-Dec-16.

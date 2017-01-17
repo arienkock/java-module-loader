@@ -1,4 +1,4 @@
-package nl.positor.modularity.glue.impl;
+package nl.positor.modularity.glue.impl.component;
 
 import nl.positor.modularity.loading.api.Instantiator;
 
@@ -16,7 +16,7 @@ public class DefaultComponent implements LifecycleComponent {
     private Object instance;
     private boolean started = false;
 
-    DefaultComponent(Instantiator instantiator, String name, String startMethodName, String stopMethodName) {
+    public DefaultComponent(Instantiator instantiator, String name, String startMethodName, String stopMethodName) {
         this.instantiator = instantiator;
         this.name = name;
         this.startMethodName = startMethodName;

@@ -1,10 +1,9 @@
 package nl.positor.modularity.glue;
 
-import nl.positor.modularity.glue.api.Component;
+import nl.positor.modularity.glue.api.component.Component;
 import nl.positor.modularity.glue.api.DependencyGraph;
 import nl.positor.modularity.glue.api.DependencyGraphBuilder;
 import nl.positor.modularity.glue.impl.DefaultDependencyGraphBuilder;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -69,6 +68,7 @@ public class DependencyGraphBuilderTest {
                 .shutdownByCalling("stop");
         DependencyGraph app = application.build();
         app.startAll();
+        app.stopAll();
     }
 
     private DependencyGraphBuilder createBuilder() {

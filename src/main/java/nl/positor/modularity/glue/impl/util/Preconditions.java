@@ -1,4 +1,4 @@
-package nl.positor.modularity.glue.impl;
+package nl.positor.modularity.glue.impl.util;
 
 /**
  * Created by Arien on 13-Jan-17.

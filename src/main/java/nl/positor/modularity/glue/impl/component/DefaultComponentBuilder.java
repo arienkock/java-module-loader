@@ -1,11 +1,13 @@
-package nl.positor.modularity.glue.impl;
+package nl.positor.modularity.glue.impl.component;
 
-import nl.positor.modularity.glue.api.ComponentBuilder;
-import nl.positor.modularity.glue.api.Dependency;
+import nl.positor.modularity.glue.api.component.ComponentBuilder;
+import nl.positor.modularity.glue.api.component.Dependency;
+import nl.positor.modularity.glue.impl.util.Preconditions;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -13,7 +15,7 @@ import java.util.stream.Stream;
  * Created by Arien on 28-Dec-16.
  */
 public class DefaultComponentBuilder implements ComponentBuilder {
-    private DefaultDependencyGraphBuilder dependencyGraphBuilder;
+    private BiConsumer<String, DefaultComponentBuilder> nameCallback;
     private String name;
     private String className;
     private List<Dependency> constructorArguments;
@@ -21,14 +23,14 @@ public class DefaultComponentBuilder implements ComponentBuilder {
     private String startMethodName;
     private String stopMethodName;
 
-    public DefaultComponentBuilder(DefaultDependencyGraphBuilder dependencyGraphBuilder) {
-        this.dependencyGraphBuilder = dependencyGraphBuilder;
+    public DefaultComponentBuilder(BiConsumer<String, DefaultComponentBuilder> nameCallback) {
+        this.nameCallback = nameCallback;
     }
 
     @Override
     public ComponentBuilder named(String name) {
         Preconditions.checkArgument(this.name == null, "Field 'name' can only be set once. Was %s and now attempted to set to %s", this.name, name);
-        dependencyGraphBuilder.registerNamedComponent(name, this);
+        nameCallback.accept(name, this);
         this.name = name;
         return this;
     }
@@ -94,13 +96,25 @@ public class DefaultComponentBuilder implements ComponentBuilder {
             .collect(Collectors.toList());
     }
 
-    static class Invocation {
+    public List<Invocation> getMethodInvocations() {
+        return methodInvocations;
+    }
+
+    public static class Invocation {
         private String methodName;
         private List<Dependency> arguments;
 
         public Invocation(String methodName, List<Dependency> arguments) {
             this.methodName = methodName;
             this.arguments = arguments;
+        }
+
+        public String getMethodName() {
+            return methodName;
+        }
+
+        public List<Dependency> getArguments() {
+            return arguments;
         }
     }
 }

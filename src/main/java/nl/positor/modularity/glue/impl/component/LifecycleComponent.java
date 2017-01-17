@@ -1,6 +1,6 @@
-package nl.positor.modularity.glue.impl;
+package nl.positor.modularity.glue.impl.component;
 
-import nl.positor.modularity.glue.api.Component;
+import nl.positor.modularity.glue.api.component.Component;
 import nl.positor.modularity.lifecycle.api.Lifecycle;
 
 /**

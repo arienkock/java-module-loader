@@ -1,11 +1,11 @@
 package nl.positor.modularity.loading;
 
-import nl.positor.modularity.loading.api.InstanceHolder;
+import nl.positor.modularity.loading.api.InstanceProvider;
 
 /**
  * Created by Arien on 16-Dec-16.
  */
-public class DummyHolder implements InstanceHolder {
+public class DummyHolder implements InstanceProvider {
     private Object instance;
 
     public DummyHolder(Object instance) {
@@ -17,7 +17,4 @@ public class DummyHolder implements InstanceHolder {
         return instance;
     }
 
-    @Override
-    public void release() {
-    }
 }
