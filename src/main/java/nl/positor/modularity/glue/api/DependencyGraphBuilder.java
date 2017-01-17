@@ -6,10 +6,6 @@ package nl.positor.modularity.glue.api;
 public interface DependencyGraphBuilder {
     ComponentBuilder withComponent();
 
-    Dependency constant(Object value);
-
-    Dependency dependency(ComponentBuilder component);
-
     Dependency dependencyNamed(String name);
 
     DependencyGraph build();

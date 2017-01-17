@@ -1,13 +1,46 @@
 package nl.positor.modularity.glue;
 
+import nl.positor.modularity.glue.api.Component;
 import nl.positor.modularity.glue.api.DependencyGraph;
 import nl.positor.modularity.glue.api.DependencyGraphBuilder;
+import nl.positor.modularity.glue.impl.DefaultDependencyGraphBuilder;
+import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.HashMap;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by Arien on 17-Dec-16.
  */
 public class DependencyGraphBuilderTest {
+
+    @Test
+    public void singleComponentTest() {
+        DependencyGraphBuilder application = createBuilder();
+        application
+                .withComponent()
+                .named("single")
+                .withImplementingClass(HashMap.class.getName())
+                .createdByCallingNullaryConstructor()
+                .startedByCalling("clear")
+                .shutdownByCalling("clear");
+        DependencyGraph graph = application.build();
+        Component component = graph.getComponentByName("single");
+        assertTrue(component.getInstance() == component.getInstance());
+        assertTrue(component.getInstance() instanceof HashMap);
+        assertTrue(component.getName().equals("single"));
+        HashMap instance = (HashMap) component.getInstance();
+        instance.put("a", "1");
+        assertTrue(instance.size() == 1);
+        graph.startAll();
+        assertTrue(instance.size() == 0);
+        instance.put("a", "1");
+        assertTrue(instance.size() == 1);
+        graph.stopAll();
+        assertTrue(instance.size() == 0);
+    }
 
     @Test
     public void testBuilder() {
@@ -17,6 +50,7 @@ public class DependencyGraphBuilderTest {
                 .named("messageServer")
                 .withImplementingClass("nl.positor.modularity.glue.testcase.MessageServerExample")
                 .createdByCallingNullaryConstructor()
+                .thenCalling("init")
                 .startedByCalling("start")
                 .shutdownByCalling("stop");
         application
@@ -38,7 +72,7 @@ public class DependencyGraphBuilderTest {
     }
 
     private DependencyGraphBuilder createBuilder() {
-        return null;
+        return new DefaultDependencyGraphBuilder();
     }
 
 }

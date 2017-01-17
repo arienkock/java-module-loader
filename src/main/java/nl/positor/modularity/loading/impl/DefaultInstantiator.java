@@ -6,8 +6,11 @@ import nl.positor.modularity.loading.api.Instantiator;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * Created by Arien on 16-Dec-16.
@@ -27,14 +30,16 @@ public class DefaultInstantiator implements Instantiator {
     }
 
     @Override
-    public Object create(ClassLoader classLoader) {
+    public Object create(ClassLoader classLoader, Consumer<List<Object>> referencedInstancesCallback) {
         Class<?> loadedClass = loadClass(classLoader);
-        Object instance = construct(loadedClass);
-        callMethods(loadedClass, instance);
+        List<Object> instanceTrackingList = new LinkedList<>();
+        Object instance = construct(loadedClass, instanceTrackingList);
+        callMethods(loadedClass, instance, instanceTrackingList);
+        referencedInstancesCallback.accept(instanceTrackingList);
         return instance;
     }
 
-    private void callMethods(Class<?> loadedClass, Object instance) {
+    private void callMethods(Class<?> loadedClass, Object instance, List<Object> instanceTrackingList) {
         outerMethodLoop:
         for (Map.Entry<String, InstanceProvider[]> entry : methodParametersMap.entrySet()) {
             String methodName = entry.getKey();
@@ -43,6 +48,7 @@ public class DefaultInstantiator implements Instantiator {
             final Object[] requiredMethodArgs = new Object[methodArgLength];
             for (int argIdx = 0; argIdx < params.length; argIdx++) {
                 requiredMethodArgs[argIdx] = params[argIdx].get();
+                instanceTrackingList.add(requiredMethodArgs[argIdx]);
             }
             for (Method method : loadedClass.getMethods()) {
                 if (method.getName().equals(methodName) && method.getParameterCount() == methodArgLength && paramsMatch(method.getParameterTypes(), requiredMethodArgs)) {
@@ -67,12 +73,13 @@ public class DefaultInstantiator implements Instantiator {
         return true;
     }
 
-    private Object construct(Class<?> loadedClass) {
+    private Object construct(Class<?> loadedClass, List<Object> instanceTrackingList) {
         Object instance = null;
         final int cArgLength = constructorArguments.length;
         final Object[] requiredInstanceArgs = new Object[cArgLength];
         for (int argIdx = 0; argIdx < constructorArguments.length; argIdx++) {
             requiredInstanceArgs[argIdx] = constructorArguments[argIdx].get();
+            instanceTrackingList.add(requiredInstanceArgs[argIdx]);
         }
         for (Constructor<?> constructor : loadedClass.getConstructors()) {
             if (constructor.getParameterCount() == cArgLength && paramsMatch(constructor.getParameterTypes(), requiredInstanceArgs)) {

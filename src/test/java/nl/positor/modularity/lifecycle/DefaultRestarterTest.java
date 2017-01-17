@@ -18,7 +18,7 @@ public class DefaultRestarterTest {
     @Test
     public void testStart() {
         Map<StrictLifecycle, Collection<StrictLifecycle>> dependencyMap = new HashMap<>();
-        dependsOn(dependencyMap, Collections.singleton(new StrictLifecycle()), Arrays.asList(new StrictLifecycle(), new StrictLifecycle()), Collections.singleton(new StrictLifecycle()), Arrays.asList(new StrictLifecycle(), new StrictLifecycle()));
+        dependsOn(dependencyMap, Collections.singleton(new StrictLifecycle()), Arrays.asList(new StrictLifecycle(), new StrictLifecycle()), Arrays.asList(new StrictLifecycle(), new StrictLifecycle(), new StrictLifecycle(), new StrictLifecycle()), Arrays.asList(new StrictLifecycle(), new StrictLifecycle()), Collections.singleton(new StrictLifecycle()), Arrays.asList(new StrictLifecycle(), new StrictLifecycle()));
         DefaultRestarter restarter = new DefaultRestarter();
         Set<Lifecycle> allObjects = new HashSet<>();
         dependencyMap.entrySet().forEach(e -> {
@@ -30,6 +30,7 @@ public class DefaultRestarterTest {
         restarter.stop(dependencyMap::get, allLifecycleObjects);
         restarter.start(dependencyMap::get, allLifecycleObjects);
         restarter.restart(dependencyMap::get, allLifecycleObjects);
+        // TODO: remove reliance on randomness for failure case
         for (int i = 0; i < 50000; i++) {
             List<Lifecycle> restartSet = new ArrayList<>(allObjects);
             Collections.shuffle(restartSet);
@@ -44,9 +45,6 @@ public class DefaultRestarterTest {
                 dependencyMap.put(current, levels[i + 1]);
             }
         }
-//        for (StrictLifecycle lifecycle : levels[levels.length - 1]) {
-//            dependencyMap.put(lifecycle, Collections.emptyList());
-//        }
     }
 
     @Test

@@ -9,4 +9,6 @@ public interface Restarter {
     void stop(ReverseDependencyLookup context, Lifecycle... objectsToStop);
 
     void start(DependencyLookup context, Lifecycle... objectsToStart);
+
+
 }

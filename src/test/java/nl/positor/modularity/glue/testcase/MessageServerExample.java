@@ -2,6 +2,7 @@ package nl.positor.modularity.glue.testcase;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
@@ -11,15 +12,20 @@ import java.util.function.Consumer;
 public class MessageServerExample implements MessageServer {
     private AtomicReference<Consumer<String>> consumer = new AtomicReference<>();
     private ExecutorService executor;
+    private AtomicLong counter;
 
-    public void start() {
+    public void init() {
         this.executor = Executors.newFixedThreadPool(4);
+        this.counter = new AtomicLong();
+    }
+    public void start() {
         this.executor.execute(this::randomMessages);
     }
 
     private void randomMessages() {
         while (true) {
             this.consumer.get().accept(Integer.toHexString((int) (Math.random() * 100_000)));
+            counter.incrementAndGet();
         }
     }
 

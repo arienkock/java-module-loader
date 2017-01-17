@@ -1,6 +1,5 @@
 package nl.positor.modularity.loading.impl;
 
-import nl.positor.modularity.loading.api.InstanceHolder;
 import nl.positor.modularity.loading.api.InstanceProvider;
 import nl.positor.modularity.loading.api.Instantiator;
 import nl.positor.modularity.loading.api.InstantiatorBuilder;

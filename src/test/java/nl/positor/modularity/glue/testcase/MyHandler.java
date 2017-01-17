@@ -9,8 +9,6 @@ public class MyHandler {
     private final MessageServer server;
     private final MessageDatabase messageDatabase;
     private final Consumer<String> consumer;
-    private boolean started = false;
-    private int latch = 0;
 
     public MyHandler(MessageServer server, MessageDatabase messageDatabase) {
         this.server = server;
@@ -19,34 +17,14 @@ public class MyHandler {
     }
 
     public synchronized void start() {
-        if (!started) {
-            server.subscribe(consumer);
-            started = true;
-        }
+        server.subscribe(consumer);
     }
 
     public synchronized void stop() {
-        if (started) {
-            server.unsubscribe(consumer);
-            started = false;
-            while (latch != 0) {
-                try {
-                    this.wait();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
+        server.unsubscribe(consumer);
     }
 
     public synchronized void handleMessage(String message) {
-        latch++;
-        try {
-            messageDatabase.save(message);
-        } finally {
-            if (--latch == 0) {
-                this.notify();
-            }
-        }
+        messageDatabase.save(message);
     }
 }
