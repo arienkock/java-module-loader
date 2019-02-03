@@ -1,5 +1,7 @@
 package nl.positor.modularity.glue.api.component;
 
+import java.net.URL;
+
 /**
  * Created by Arien on 17-Dec-16.
  */
@@ -19,4 +21,8 @@ public interface ComponentBuilder {
     ComponentBuilder startedByCalling(String methodName);
 
     ComponentBuilder shutdownByCalling(String methodName);
+
+    ComponentBuilder loadedFrom(URL... classPathUrls);
+
+    ComponentBuilder withPublicApi(String... publicClassNames);
 }

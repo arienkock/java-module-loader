@@ -21,7 +21,7 @@ public class MyHandler {
     }
 
     public synchronized void stop() {
-        server.unsubscribe(consumer);
+        server.unsubscribe();
     }
 
     public synchronized void handleMessage(String message) {

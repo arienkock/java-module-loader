@@ -18,4 +18,8 @@ public class MessageDatabaseExample implements MessageDatabase, Iterable<String>
     public Iterator<String> iterator() {
         return database.iterator();
     }
+
+    public List<String> getData() {
+        return database;
+    }
 }

@@ -4,6 +4,7 @@ import nl.positor.modularity.glue.api.component.ComponentBuilder;
 import nl.positor.modularity.glue.api.component.Dependency;
 import nl.positor.modularity.glue.impl.util.Preconditions;
 
+import java.net.URL;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,6 +23,8 @@ public class DefaultComponentBuilder implements ComponentBuilder {
     private List<Invocation> methodInvocations = new LinkedList<>();
     private String startMethodName;
     private String stopMethodName;
+    private URL[] classPathUrls;
+    private String[] publicClassNames;
 
     public DefaultComponentBuilder(BiConsumer<String, DefaultComponentBuilder> nameCallback) {
         this.nameCallback = nameCallback;
@@ -66,6 +69,20 @@ public class DefaultComponentBuilder implements ComponentBuilder {
     public ComponentBuilder shutdownByCalling(String methodName) {
         Preconditions.checkArgument(this.stopMethodName == null, "Field 'stopMethodName' can only be set once. Was %s and now attempted to set to %s", this.stopMethodName, methodName);
         this.stopMethodName = methodName;
+        return this;
+    }
+
+    @Override
+    public ComponentBuilder loadedFrom(URL... classPathUrls) {
+        Preconditions.checkArgument(this.classPathUrls == null, "Field 'classPathUrls' can only be set once. Was %s and now attempted to set to %s", this.classPathUrls, classPathUrls);
+        this.classPathUrls = classPathUrls;
+        return this;
+    }
+
+    @Override
+    public ComponentBuilder withPublicApi(String... publicClassNames) {
+        Preconditions.checkArgument(this.publicClassNames == null, "Field 'publicClassNames' can only be set once. Was %s and now attempted to set to %s", this.publicClassNames, publicClassNames);
+        this.publicClassNames = publicClassNames;
         return this;
     }
 

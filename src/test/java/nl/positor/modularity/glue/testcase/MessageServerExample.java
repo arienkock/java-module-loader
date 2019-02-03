@@ -11,26 +11,24 @@ import java.util.function.Consumer;
  */
 public class MessageServerExample implements MessageServer {
     private AtomicReference<Consumer<String>> consumer = new AtomicReference<>();
-    private ExecutorService executor;
     private AtomicLong counter;
 
     public void init() {
-        this.executor = Executors.newFixedThreadPool(4);
         this.counter = new AtomicLong();
-    }
-    public void start() {
-        this.executor.execute(this::randomMessages);
-    }
-
-    private void randomMessages() {
-        while (true) {
-            this.consumer.get().accept(Integer.toHexString((int) (Math.random() * 100_000)));
-            counter.incrementAndGet();
-        }
     }
 
     public void stop() throws InterruptedException {
-        this.executor.shutdownNow();
+        consumer.set(null);
+    }
+
+    public AtomicLong getCounter() {
+        return counter;
+    }
+
+    @Override
+    public void acceptMessage(String message) {
+        counter.incrementAndGet();
+        consumer.get().accept(message);
     }
 
     @Override
@@ -41,7 +39,7 @@ public class MessageServerExample implements MessageServer {
     }
 
     @Override
-    public void unsubscribe(Consumer<String> messageConsumer) {
+    public void unsubscribe() {
         consumer.set(null);
     }
 }

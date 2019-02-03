@@ -1,5 +1,7 @@
 package nl.positor.modularity.glue.impl;
 
+import nl.positor.modularity.classpath.api.ModuleClassLoaderPair;
+import nl.positor.modularity.classpath.impl.DefaultModuleClassLoaderPair;
 import nl.positor.modularity.glue.api.DependencyGraph;
 import nl.positor.modularity.glue.api.DependencyGraphBuilder;
 import nl.positor.modularity.glue.api.component.Component;
@@ -45,7 +47,18 @@ public class DefaultDependencyGraphBuilder implements DependencyGraphBuilder {
         Map<String, LifecycleComponent> builtComponentMap = new HashMap<>();
         for (Map.Entry<String, DefaultComponentBuilder> entry : componentMap.entrySet()) {
             DefaultComponentBuilder componentBuilder = entry.getValue();
-            DefaultComponent component = new DefaultComponent(toInstantiator(componentBuilder, graphHolder::get), entry.getKey(), componentBuilder.getStartMethodName(), componentBuilder.getStopMethodName());
+            Supplier<ModuleClassLoaderPair> classLoaderPairSupplier =
+                    () -> {
+                        new DefaultModuleClassLoaderPair(moduleDefinition, )
+                    };
+            DefaultComponent component =
+                    new DefaultComponent(
+                            toInstantiator(
+                                    componentBuilder, graphHolder::get),
+                            classLoaderPairSupplier,
+                            entry.getKey(),
+                            componentBuilder.getStartMethodName(),
+                            componentBuilder.getStopMethodName());
             builtComponentMap.put(componentBuilder.getName(), component);
             depLookup.put(component, componentBuilder.getAllDependencies());
         }
